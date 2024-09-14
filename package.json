@@ -1,7 +1,7 @@
 {
-  "name": "js-email-template-renderer",
+  "name": "js-email-template-compiler",
   "version": "0.0.1",
-  "description": "JS Email Template Renderer",
+  "description": "JS Email Template Compiler",
   "main": "index.js",
   "scripts": {
     "test": "node test.js"
@@ -9,7 +9,7 @@
   "keywords": [
     "email",
     "template",
-    "renderer",
+    "compiler",
     "js",
     "dom",
     "html",
