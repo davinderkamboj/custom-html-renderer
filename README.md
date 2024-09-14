@@ -58,12 +58,13 @@ const data = {
 };
 
 // Render template
-const result = renderTemplate(htmlTemplate, data, true);
-console.log(result);
+renderTemplate(htmlTemplate, data, true).then((renderedHtml) => {
+    console.log(renderedHtml);
+});
 ```
 
 ## TypeScript Example
-```typescript
+```javascript
 import { renderTemplate } from 'js-email-template-compiler';
 
 const htmlTemplate = `
@@ -90,8 +91,9 @@ const data = {
     }
 };
 
-const renderedHtml = renderTemplate(htmlTemplate, data, true);
-console.log(renderedHtml);
+renderTemplate(htmlTemplate, data, true).then((renderedHtml) => {
+    console.log(renderedHtml);
+});
 ```
 
 ### Options
@@ -170,7 +172,7 @@ const htmlTemplate = `
     <h1 js-value="user.name">example name</h1>
     <h1 js-value="user.email">example email</h1>
     <h2 js-if="user.isAdmin">Admin Section
-        <h3 js-if="user.isSuperAdmin">Super Admin Section</h3>
+        <span js-if="user.isSuperAdmin">Super Admin Section</span>
     </h2>
     <table border="1">
         <tr>
@@ -224,8 +226,9 @@ const data = {
 };
 
 // Render the template with the data
-const renderedHtml = renderTemplate(htmlTemplate, data, true);
-console.log(renderedHtml);
+renderTemplate(htmlTemplate, data, true).then((renderedHtml) => {
+    console.log(renderedHtml);
+});
 ```
 
 ## License

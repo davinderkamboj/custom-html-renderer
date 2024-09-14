@@ -1,6 +1,6 @@
 {
   "name": "js-email-template-compiler",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "JS Email Template Compiler with TypeScript support",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -14,6 +14,9 @@
     "template",
     "compiler",
     "js",
+    "ts",
+    "typescript",
+    "javascript",
     "dom",
     "html",
     "attribute"
