@@ -1,0 +1,59 @@
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Template Renderer</title>
+</head>
+<body>
+
+    <h1 data-value="user.name">John Doe</h1>
+    <h1 data-value="user.email">john@example.com</h1>
+    <h2 data-if="user.isAdmin">Admin Section</h2>
+
+    <table border="1">
+        <tbody><tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Orders</th>
+            <th>Admin</th>
+        </tr>
+        <tr data-each="user in users">
+            <td data-value="user.name">Alice</td>
+            <td data-value="user.email">alice@example.com</td>
+            <td>
+                <table border="1">
+                    <tbody><tr data-each="order in user.orders">
+                        <td data-value="order.name">Laptop</td>
+                        <td data-value="order.date">2023-01-01</td>
+                        <td data-value="global.user.name">John Doe</td>
+                        <td data-value="user.name">Alice</td>
+                    </tr><tr data-each="order in user.orders">
+                        <td data-value="order.name">Phone</td>
+                        <td data-value="order.date">2023-02-01</td>
+                        <td data-value="global.user.name">John Doe</td>
+                        <td data-value="user.name">Alice</td>
+                    </tr>
+                </tbody></table>
+            </td>
+            <td data-if="user.isAdmin">Admin</td>
+            <td data-if-not="user.isAdmin" style="display: none;">Not Admin</td>
+        </tr><tr data-each="user in users">
+            <td data-value="user.name">Bob</td>
+            <td data-value="user.email">bob@example.com</td>
+            <td>
+                <table border="1">
+                    <tbody><tr data-each="order in user.orders">
+                        <td data-value="order.name">Tablet</td>
+                        <td data-value="order.date">2023-03-01</td>
+                        <td data-value="global.user.name">John Doe</td>
+                        <td data-value="user.name">Bob</td>
+                    </tr>
+                </tbody></table>
+            </td>
+            <td data-if="user.isAdmin" style="display: none;">Admin</td>
+            <td data-if-not="user.isAdmin" style="">Not Admin</td>
+        </tr>
+    </tbody></table>
+
+
+
+</body></html>
