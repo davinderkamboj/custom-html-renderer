@@ -12,10 +12,11 @@ const htmlTemplate = `
 </head>
 <body>
 
-    <h1 data-value="user.name"></h1>
-    <h1 data-value="user.email"></h1>
-    <h2 data-if="user.isAdmin">Admin Section</h2>
-
+    <h1 js-value="user.name">example name</h1>
+    <h1 js-value="user.email">example email</h1>
+    <h2 js-if="user.isAdmin">Admin Section
+        <h3 js-if="user.isSuperAdmin">Super Admin Section</h3>
+    </h2>
     <table border="1">
         <tr>
             <th>Name</th>
@@ -23,21 +24,21 @@ const htmlTemplate = `
             <th>Orders</th>
             <th>Admin</th>
         </tr>
-        <tr data-each="user in users">
-            <td data-value="user.name"></td>
-            <td data-value="user.email"></td>
+        <tr js-each="user in users">
+            <td js-value="user.name"></td>
+            <td style="text-align: center" js-value="user.email"></td>
             <td>
                 <table border="1">
-                    <tr data-each="order in user.orders">
-                        <td data-value="order.name"></td>
-                        <td data-value="order.date"></td>
-                        <td data-value="global.user.name"></td>
-                        <td data-value="user.name"></td>
+                    <tr js-each="order in user.orders">
+                        <td js-value="order.name">exmaple order name</td>
+                        <td js-value="order.date">example order date</td>
+                        <td js-value="global.user.name">example global name</td>
+                        <td js-value="user.name">example user name</td>
                     </tr>
                 </table>
             </td>
-            <td data-if="user.isAdmin">Admin</td>
-            <td data-if-not="user.isAdmin">Not Admin</td>
+            <td style="text-align: center" js-if="user.isAdmin">Admin</td>
+            <td style="text-align: center" js-if-not="user.isAdmin">Not Admin</td>
         </tr>
     </table>
 
@@ -47,7 +48,7 @@ const htmlTemplate = `
 
 // Example data
 const data = {
-    user: { name: "John Doe", email: "john@example.com", isAdmin: true },
+    user: { name: "John Doe", email: "john@example.com", isAdmin: true, isSuperAdmin: false },
     users: [
         {
             name: "Alice",
@@ -62,13 +63,25 @@ const data = {
             name: "Bob",
             email: "bob@example.com",
             isAdmin: false,
-            orders: [{ name: "Tablet", date: "2023-03-01" }]
+            orders: [{ name: "Tablet", date: "2003-03-01" }]
+        },
+        {
+            name: "Bob2",
+            email: "bob3@example.com",
+            isAdmin: false,
+            orders: [{ name: "Tablet3", date: "2013-03-01" }]
+        },
+        {
+            name: "Bob3",
+            email: "bob3@example.com",
+            isAdmin: false,
+            orders: [{ name: "Tablet3", date: "2033-03-01" }]
         }
     ]
 };
 
 // Render the template with the data
-const renderedHtml = renderTemplate(htmlTemplate, data);
+const renderedHtml = renderTemplate(htmlTemplate, data, true);
 
 console.log(renderedHtml);
 

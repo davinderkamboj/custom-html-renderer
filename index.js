@@ -24,35 +24,45 @@ function evaluateExpression(expression, data, globalData) {
 }
 
 // Render the template by parsing the DOM and applying the attribute-based logic
-function renderTemplate(htmlString, data) {
+function renderTemplate(htmlString, data, removeJsAttributes = false) {
     const dom = new JSDOM(htmlString);
     const document = dom.window.document;
 
     function processElement(rootElement, currentData, globalData = data) {
-        // Handle `data-value`
-        rootElement.querySelectorAll('[data-value]').forEach(el => {
-            const key = el.getAttribute('data-value');
+        // Handle `js-value`
+        rootElement.querySelectorAll('[js-value]').forEach(el => {
+            const key = el.getAttribute('js-value');
             const value = getValueByPath(key, currentData, globalData);
             if (value !== undefined) el.textContent = value;
         });
 
-        // Handle `data-if`
-        rootElement.querySelectorAll('[data-if]').forEach(el => {
-            const condition = el.getAttribute('data-if');
+        // Handle `js-if`
+        rootElement.querySelectorAll('[js-if]').forEach(el => {
+            const condition = el.getAttribute('js-if');
             const show = evaluateExpression(condition, currentData, globalData);
-            el.style.display = show ? '' : 'none';
+            //el.style.display = show ? '' : 'none';
+            if(show) {
+                el.classList.remove('remove-it');
+            } else {
+                el.classList.add('remove-it');
+            }
         });
 
-        // Handle `data-if-not`
-        rootElement.querySelectorAll('[data-if-not]').forEach(el => {
-            const condition = el.getAttribute('data-if-not');
+        // Handle `js-if-not`
+        rootElement.querySelectorAll('[js-if-not]').forEach(el => {
+            const condition = el.getAttribute('js-if-not');
             const show = !evaluateExpression(condition, currentData, globalData);
-            el.style.display = show ? '' : 'none';
+            // el.style.display = show ? '' : 'none';
+            if(show) {
+                el.classList.remove('remove-it');
+            } else {
+                el.classList.add('remove-it');
+            }
         });
 
-        // Handle `data-each`
-        rootElement.querySelectorAll('[data-each]').forEach(el => {
-            const [itemName, arrayName] = el.getAttribute('data-each').split(' in ');
+        // Handle `js-each`
+        rootElement.querySelectorAll('[js-each]').forEach(el => {
+            const [itemName, arrayName] = el.getAttribute('js-each').split(' in ');
             const array = getValueByPath(arrayName, currentData, globalData);
             if (Array.isArray(array)) {
                 const parent = el.parentElement;
@@ -70,6 +80,29 @@ function renderTemplate(htmlString, data) {
 
     // Start processing the entire document
     processElement(document.body, data);
+
+    if (removeJsAttributes) {
+        // Remove all js-value, js-if, js-if-not, js-each attributes
+        const jsAttributes = document.querySelectorAll('[js-value], [js-if], [js-if-not], [js-each]');
+        for (const el of jsAttributes) {
+            if(el.classList.contains('remove-it')) {
+                el.remove();
+                continue;
+            }
+            el.removeAttribute('js-value');
+            el.removeAttribute('js-if');
+            el.removeAttribute('js-if-not');
+            el.removeAttribute('js-each');
+        }
+    } else {
+        // Remove display none elements
+        const displayNoneElements = document.querySelectorAll('[js-if], [js-if-not]');
+        for (const el of displayNoneElements) {
+            if (el.classList.contains('remove-it')) {
+                el.remove();
+            }
+        }
+    }
 
     return dom.serialize();
 }

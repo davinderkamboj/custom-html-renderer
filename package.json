@@ -1,12 +1,20 @@
 {
-  "name": "custom-html-renderer",
-  "version": "1.0.0",
-  "description": "",
+  "name": "js-email-template-renderer",
+  "version": "0.0.1",
+  "description": "JS Email Template Renderer",
   "main": "index.js",
   "scripts": {
     "test": "node test.js"
   },
-  "keywords": [],
+  "keywords": [
+    "email",
+    "template",
+    "renderer",
+    "js",
+    "dom",
+    "html",
+    "attribute"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
