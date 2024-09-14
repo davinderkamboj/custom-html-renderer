@@ -7,7 +7,8 @@ A JavaScript library for compiling email templates with dynamic content, conditi
 
 - [Installation](#installation)
 - [Usage](#usage)
-  - [Basic Usage](#basic-usage)
+  - [JavaScript Example](#javascript-example)
+  - [TypeScript Example](#typescript-example)
   - [Options](#options)
 - [Attributes](#attributes)
   - [js-value](#js-value)
@@ -26,6 +27,7 @@ npm install js-email-template-compiler
 
 ## Usage
 
+### JavaScript Example
 ```javascript
 const { renderTemplate } = require('js-email-template-compiler');
 
@@ -58,6 +60,38 @@ const data = {
 // Render template
 const result = renderTemplate(htmlTemplate, data, true);
 console.log(result);
+```
+
+## TypeScript Example
+```typescript
+import { renderTemplate } from 'js-email-template-compiler';
+
+const htmlTemplate = `
+    <div>
+        <h1 js-value="user.name">Placeholder</h1>
+        <h2 js-if="user.isAdmin">Admin Section</h2>
+        <h3 js-if-not="user.isAdmin">User Section</h3>
+        <ul>
+            <li js-each="order in user.orders">
+                <span js-value="order.name"></span> - <span js-value="order.date"></span>
+            </li>
+        </ul>
+    </div>
+`;
+
+const data = {
+    user: {
+        name: "John Doe",
+        isAdmin: true,
+        orders: [
+            { name: "Order 1", date: "2023-01-01" },
+            { name: "Order 2", date: "2023-02-01" }
+        ]
+    }
+};
+
+const renderedHtml = renderTemplate(htmlTemplate, data, true);
+console.log(renderedHtml);
 ```
 
 ### Options

@@ -1,4 +1,4 @@
-const { renderTemplate } = require('./index');
+const { renderTemplate } = require('./dist/index');
 const fs = require('fs');
 
 // Example HTML template
