@@ -15,7 +15,7 @@ const htmlTemplate = `
     <h1 js-value="user.name">example name</h1>
     <h1 js-value="user.email">example email</h1>
     <h2 js-if="user.isAdmin">Admin Section
-        <h3 js-if="user.isSuperAdmin">Super Admin Section</h3>
+        <span js-if="user.isSuperAdmin">Super Admin Section</span>
     </h2>
     <table border="1">
         <tr>
@@ -38,7 +38,7 @@ const htmlTemplate = `
                 </table>
             </td>
             <td style="text-align: center" js-if="user.isAdmin">Admin</td>
-            <td style="text-align: center" js-if-not="user.isAdmin">Not Admin</td>
+            <td style="text-align: center" js-if-not="user.isAdmin" js-value="user.name">example user name</td>
         </tr>
     </table>
 
@@ -48,7 +48,7 @@ const htmlTemplate = `
 
 // Example data
 const data = {
-    user: { name: "John Doe", email: "john@example.com", isAdmin: true, isSuperAdmin: false },
+    user: { name: "John Doe", email: "john@example.com", isAdmin: true, isSuperAdmin: true },
     users: [
         {
             name: "Alice",
@@ -81,9 +81,6 @@ const data = {
 };
 
 // Render the template with the data
-const renderedHtml = renderTemplate(htmlTemplate, data, true);
-
-console.log(renderedHtml);
-
-// Write the rendered HTML to a file
-fs.writeFileSync('output.html', renderedHtml);
+renderTemplate(htmlTemplate, data, true).then((renderedHtml) => {
+    fs.writeFileSync('output.html', renderedHtml);
+});

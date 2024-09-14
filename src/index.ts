@@ -29,20 +29,29 @@ function evaluateExpression(expression: string, data: DataObject, globalData: Da
 }
 
 // Render the template by parsing the DOM and applying the attribute-based logic
-function renderTemplate(htmlString: string, data: DataObject, removeJsAttributes = false): string {
+async function renderTemplate(htmlString: string, data: DataObject, removeJsAttributes = false): Promise<string> {
     const dom = new JSDOM(htmlString);
     const document = dom.window.document;
 
-    function processElement(rootElement: HTMLElement, currentData: DataObject, globalData: DataObject = data) {
+    async function processDynamicValues(el: HTMLElement, currentData: DataObject, globalData: DataObject = data) {
         // Handle `js-value`
-        rootElement.querySelectorAll('[js-value]').forEach(el => {
+        if (el.hasAttribute('js-value')) {
             const key = el.getAttribute('js-value') as string;
             const value = getValueByPath(key, currentData, globalData);
-            if (value !== undefined) el.textContent = value;
-        });
+            if (value !== undefined) {
+                el.textContent = value;
+            }
+        }
 
+        // Process children elements recursively
+        for (const child of Array.from(el.children)) {
+            await processDynamicValues(child as HTMLElement, currentData, globalData);
+        }
+    }
+
+    async function processConditionals(el: HTMLElement, currentData: DataObject, globalData: DataObject = data) {
         // Handle `js-if`
-        rootElement.querySelectorAll('[js-if]').forEach(el => {
+        if(el.hasAttribute('js-if')) {
             const condition = el.getAttribute('js-if') as string;
             const show = evaluateExpression(condition, currentData, globalData);
             if (show) {
@@ -50,10 +59,10 @@ function renderTemplate(htmlString: string, data: DataObject, removeJsAttributes
             } else {
                 el.classList.add('remove-it');
             }
-        });
+        }
 
         // Handle `js-if-not`
-        rootElement.querySelectorAll('[js-if-not]').forEach(el => {
+        if(el.hasAttribute('js-if-not')) {
             const condition = el.getAttribute('js-if-not') as string;
             const show = !evaluateExpression(condition, currentData, globalData);
             if (show) {
@@ -61,28 +70,50 @@ function renderTemplate(htmlString: string, data: DataObject, removeJsAttributes
             } else {
                 el.classList.add('remove-it');
             }
-        });
+        }
 
-        // Handle `js-each`
-        rootElement.querySelectorAll('[js-each]').forEach(el => {
+        // Process children elements recursively
+        for (const child of Array.from(el.children)) {
+            await processConditionals(child as HTMLElement, currentData, globalData);
+        }
+    }
+
+    // Handle `js-each` elements separately to avoid infinite recursion
+    async function processEachElements(el: HTMLElement, currentData: DataObject, globalData: DataObject = data) {
+        if(el.hasAttribute('js-each')) {
             const [itemName, arrayName] = (el.getAttribute('js-each') as string).split(' in ');
             const array = getValueByPath(arrayName, currentData, globalData);
             if (Array.isArray(array)) {
                 const parent = el.parentElement;
                 const originalTemplate = el.cloneNode(true) as HTMLElement;
-                array.forEach(item => {
+                for (const item of array) {
                     const clone = originalTemplate.cloneNode(true) as HTMLElement;
                     const newContext = { ...currentData, [itemName]: item };
-                    processElement(clone, newContext, globalData);
+                    await processConditionals(clone, newContext, globalData);
+                    await processDynamicValues(clone, newContext, globalData);
                     if (parent) parent.insertBefore(clone, el);
-                });
-                el.remove(); // Remove the original template element
+                }
+
+                // Process children elements recursively
+                for (const child of Array.from(el.children)) {
+                    await processEachElements(child as HTMLElement, currentData, globalData);
+                }
+
+                // Remove the original template element
+                el.remove();
             }
-        });
+        }
+
+        // Process children elements recursively
+        for (const child of Array.from(el.children)) {
+            await processEachElements(child as HTMLElement, currentData, globalData);
+        }
     }
 
     // Start processing the entire document
-    processElement(document.body as HTMLElement, data);
+    await processConditionals(document.body as HTMLElement, data);
+    await processDynamicValues(document.body as HTMLElement, data);
+    await processEachElements(document.body as HTMLElement, data);
 
     if (removeJsAttributes) {
         // Remove all js-value, js-if, js-if-not, js-each attributes
